@@ -149,9 +149,14 @@ fn not_found() -> Dom {
 }
 
 fn get_route() -> String {
-    window()
+    let hash = window()
         .and_then(|w| w.location().hash().ok())
-        .unwrap_or_else(|| "/#".to_string())
+        .unwrap_or_else(|| "".to_string())
         .trim_start_matches("#")
-        .to_string()
+        .to_string();
+    if hash.is_empty() {
+        "/".to_string()
+    } else {
+        hash
+    }
 }
