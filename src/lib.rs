@@ -88,7 +88,7 @@ impl Navbar {
             .children_signal_vec(self.route.signal_cloned().map(move |current_route| {
                 vec![
                      Self::link("Today", "/", current_route.clone()),
-                    Self::link("Tomorrow", "/about", current_route.clone()),
+                    Self::link("Tomorrow", "/tomorrow", current_route.clone()),
                 ]
             }).to_signal_vec())
         })

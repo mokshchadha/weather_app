@@ -7,7 +7,7 @@ pub struct Home {}
 impl Home {
     pub fn render() -> Dom {
         html!("div", {
-            .text("Home Page").class("")
+            .text("Today Page")
 
         })
     }
