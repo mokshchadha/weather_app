@@ -75,6 +75,7 @@ impl Router {
         }
     }
 }
+
 struct Navbar {
     route: Arc<Mutable<String>>,
 }
@@ -86,32 +87,34 @@ impl Navbar {
 
     fn render(self) -> Dom {
         html!("nav", {
-            .attr("class", "bg-white shadow-md mb-2 p-2")
-            .children(vec![
-                self.link("Home", "/"),
-                self.link("About", "/about"),
-                self.link("Contact", "/contact")
-            ])
+            .attr("class", "ml-10 flex items-baseline space-x-4")
+            .children_signal_vec(self.route.signal_cloned().map(move |current_route| {
+                vec![
+                     Self::link("Home", "/", current_route.clone()),
+                    Self::link("About", "/about", current_route.clone()),
+                    Self::link("Contact", "/contact", current_route.clone())
+                ]
+            }).to_signal_vec())
         })
     }
 
-    fn link(&self, title: &str, path: &str) -> Dom {
-        let route = self.route.clone();
-
-        let path = path.to_string();
-        let current_route = get_route();
+    fn link(title: &str, path: &str, current_route: String) -> Dom {
         let active_class = if current_route == path {
-            "text-black hover:text-blue-500 m-1"
+            "rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
         } else {
-            "text-black hover:text-red-500 m-1"
+            "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
         };
+
+        let path_clone = path.to_string();
+
         html!("a", {
             .attr("href", &format!("#{}", path))
             .attr("class", active_class)
             .text(title)
-            .event(clone!(route => move |_: events::Click| {
-                route.set(path.clone());
-            }))
+            .event(move |_: events::Click| {
+                let window = window().unwrap();
+                window.location().set_hash(&path_clone).unwrap();
+            })
         })
     }
 }
