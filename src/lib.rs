@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use dominator::{clone, Dom, events, html};
+use dominator::{Dom, events, html};
 use futures_signals::signal::{Mutable, SignalExt};
 use wasm_bindgen::prelude::*;
 use web_sys::window;
@@ -9,8 +9,7 @@ use web_sys::window;
 
 mod pages;
 
-use pages::about::About;
-use pages::contact::Contact;
+use pages::tomorrow::Tomorrow;
 use pages::home::Home;
 
 
@@ -47,7 +46,6 @@ impl App {
     }
 
     fn render(self) -> Dom {
-        // let route = Arc::clone(&self.route);
         html!("div", {
             .child(self.navbar.render())
             .child_signal(self.route.signal_cloned().map(move |route| {
@@ -59,7 +57,6 @@ impl App {
 
 struct Router {
     components: HashMap<String, Box<dyn Fn() -> Dom>>,
-    // route: Arc<Mutable<String>>,
 }
 
 impl Router {
@@ -90,9 +87,8 @@ impl Navbar {
             .attr("class", "ml-10 flex items-baseline space-x-4")
             .children_signal_vec(self.route.signal_cloned().map(move |current_route| {
                 vec![
-                     Self::link("Home", "/", current_route.clone()),
-                    Self::link("About", "/about", current_route.clone()),
-                    Self::link("Contact", "/contact", current_route.clone())
+                     Self::link("Today", "/", current_route.clone()),
+                    Self::link("Tomorrow", "/about", current_route.clone()),
                 ]
             }).to_signal_vec())
         })
@@ -102,7 +98,7 @@ impl Navbar {
         let active_class = if current_route == path {
             "rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
         } else {
-            "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+            "rounded-md px-3 py-2 text-sm font-medium text-blue transition delay-80 hover:bg-gray-700 hover:text-white"
         };
 
         let path_clone = path.to_string();
@@ -119,13 +115,6 @@ impl Navbar {
     }
 }
 
-fn link_style(route: &str, current_route: &str) -> &'static str {
-    if route == current_route {
-        "text-black hover:text-blue-500 m-1"
-    } else {
-        "bg-grey text-blue hover:text-blue-500 m-1"
-    }
-}
 
 fn create_components_map() -> HashMap<String, Box<dyn Fn() -> Dom>> {
     let mut components = HashMap::new();
@@ -134,12 +123,8 @@ fn create_components_map() -> HashMap<String, Box<dyn Fn() -> Dom>> {
         Box::new(Home::render) as Box<dyn Fn() -> Dom>,
     );
     components.insert(
-        "/about".to_string(),
-        Box::new(About::render) as Box<dyn Fn() -> Dom>,
-    );
-    components.insert(
-        "/contact".to_string(),
-        Box::new(Contact::render) as Box<dyn Fn() -> Dom>,
+        "/tomorrow".to_string(),
+        Box::new(Tomorrow::render) as Box<dyn Fn() -> Dom>,
     );
     components.insert("".to_string(), Box::new(not_found) as Box<dyn Fn() -> Dom>);
     components

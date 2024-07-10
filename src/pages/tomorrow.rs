@@ -1,11 +1,11 @@
 use dominator::{Dom, html};
 
-pub struct About {}
+pub struct Tomorrow {}
 
-impl About {
+impl Tomorrow {
     pub fn render() -> Dom {
         html!("div" ,{
-            .text("About Page")
+            .text("Tomorrow Page")
         })
     }
 }

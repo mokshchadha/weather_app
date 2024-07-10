@@ -1,3 +1,3 @@
-pub mod about;
-pub mod contact;
+pub mod tomorrow;
 pub mod home;
+mod components;
